@@ -56,7 +56,7 @@
       :title-text="action"
       @update-products="getProducts"
     />
-    <DeleteModal ref="deleteModal" :product-obj="product" @update-products="getProducts" />
+    <DeleteModal ref="deleteModal" :item-obj="product" @delete-item="removeProduct" />
     <PaginationComponent :pagi-obj="pagination" @update-page="getProducts" />
   </div>
 </template>
@@ -89,12 +89,26 @@ export default {
           `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/products?page=${pageNum}`
         )
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           const { products, pagination } = res.data;
           this.products = products;
           this.pagination = pagination;
         })
         .catch(() => {});
+    },
+    removeProduct() {
+      this.$http
+        .delete(
+          `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/product/${this.product.id}`
+        )
+        .then((res) => {
+          this.$swal(res.data.message);
+          this.$refs.deleteModal.hideModal();
+          this.getProducts();
+        })
+        .catch((err) => {
+          this.$swal(err.response.data.message);
+        });
     },
     openProductModal(action, product = {}) {
       // 編輯產品
