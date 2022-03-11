@@ -1,0 +1,258 @@
+<template>
+  <div
+    id="productModal"
+    class="modal fade"
+    tabindex="-1"
+    aria-labelledby="productModalLabel"
+    aria-hidden="true"
+    ref="modal"
+  >
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content border-0">
+        <div class="modal-header bg-dark text-white">
+          <h5 id="productModalLabel" class="modal-title">
+            <span>{{ titleText }}</span>
+          </h5>
+          <button type="button" class="btn-close" aria-label="Close" @click="hideModal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="mb-2">
+                <div class="mb-3">
+                  <label for="imageUrl" class="form-label">主要圖片</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="請輸入圖片連結"
+                    v-model="product.imageUrl"
+                  />
+                </div>
+                <img class="img-fluid" :src="product.imageUrl" alt="" />
+              </div>
+              <div class="h3">多圖新增</div>
+              <div
+                class="mb-2"
+                v-if="product.imagesUrl !== undefined && product.imagesUrl.length !== 0"
+              >
+                <template v-for="(imgUrl, index) in product.imagesUrl" :key="index">
+                  <div class="mb-3">
+                    <label for="imageUrl" class="form-label">圖片網址</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="請輸入圖片連結"
+                      v-model="product.imagesUrl[index]"
+                    />
+                  </div>
+                  <img class="img-fluid" :src="imgUrl" />
+                </template>
+                <div
+                  v-if="
+                    !product.imagesUrl.length || product.imagesUrl[product.imagesUrl.length - 1]
+                  "
+                >
+                  <button class="btn btn-outline-primary btn-sm d-block w-100" @click="addImg">
+                    新增圖片
+                  </button>
+                </div>
+                <div v-else>
+                  <button class="btn btn-outline-danger btn-sm d-block w-100" @click="removeImg">
+                    刪除圖片
+                  </button>
+                </div>
+              </div>
+              <div v-else>
+                <button class="btn btn-outline-primary btn-sm d-block w-100" @click="addImg">
+                  新增圖片
+                </button>
+              </div>
+            </div>
+            <div class="col-sm-8">
+              <div class="mb-3">
+                <label for="title" class="form-label">標題</label>
+                <input
+                  id="title"
+                  type="text"
+                  class="form-control"
+                  placeholder="請輸入標題"
+                  v-model="product.title"
+                />
+              </div>
+
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <label for="category" class="form-label">分類</label>
+                  <input
+                    id="category"
+                    type="text"
+                    class="form-control"
+                    placeholder="請輸入分類"
+                    v-model="product.category"
+                  />
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="price" class="form-label">單位</label>
+                  <input
+                    id="unit"
+                    type="text"
+                    class="form-control"
+                    placeholder="請輸入單位"
+                    v-model="product.unit"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="mb-3 col-md-6">
+                  <label for="origin_price" class="form-label">原價</label>
+                  <input
+                    id="origin_price"
+                    type="number"
+                    min="0"
+                    class="form-control"
+                    placeholder="請輸入原價"
+                    v-model.number="product.origin_price"
+                  />
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label for="price" class="form-label">售價</label>
+                  <input
+                    id="price"
+                    type="number"
+                    min="0"
+                    class="form-control"
+                    placeholder="請輸入售價"
+                    v-model.number="product.price"
+                  />
+                </div>
+              </div>
+              <hr />
+
+              <div class="mb-3">
+                <label for="description" class="form-label">產品描述</label>
+                <textarea
+                  id="description"
+                  type="text"
+                  class="form-control"
+                  placeholder="請輸入產品描述"
+                  v-model="product.description"
+                >
+                </textarea>
+              </div>
+              <div class="mb-3">
+                <label for="content" class="form-label">說明內容</label>
+                <textarea
+                  id="description"
+                  type="text"
+                  class="form-control"
+                  placeholder="請輸入說明內容"
+                  v-model="product.content"
+                >
+                </textarea>
+              </div>
+              <div class="mb-3">
+                <div class="form-check">
+                  <input
+                    id="is_enabled"
+                    class="form-check-input"
+                    type="checkbox"
+                    v-model.number="product.is_enabled"
+                    :true-value="1"
+                    :false-value="0"
+                  />
+                  <label class="form-check-label" for="is_enabled">是否啟用</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" @click="hideModal">取消</button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="titleText !== '編輯產品' ? addProduct() : editProduct(product.id)"
+          >
+            確認
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { Modal } from 'bootstrap';
+
+export default {
+  data() {
+    return {
+      bsModal: {},
+      product: {}
+    };
+  },
+  props: ['productObj', 'titleText'],
+  watch: {
+    productObj() {
+      this.product = { ...this.productObj };
+    }
+  },
+  methods: {
+    addProduct() {
+      const data = {
+        data: this.product
+      };
+      this.$http
+        .post(`${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/product`, data)
+        .then((res) => {
+          this.$swal(res.data.message);
+          this.hideModal();
+          this.updateProducts();
+        })
+        .catch((err) => {
+          this.$swal(JSON.stringify(err.response.data.message));
+        });
+    },
+    editProduct(id) {
+      console.log(id);
+      const data = {
+        data: this.product
+      };
+      this.$http
+        .put(`${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/product/${id}`, data)
+        .then((res) => {
+          this.$swal(res.data.message);
+          this.hideModal();
+          this.updateProducts();
+        })
+        .catch((err) => {
+          this.$swal(err.response.data.message);
+        });
+    },
+    updateProducts() {
+      this.$emit('update-products');
+    },
+    addImg() {
+      if (this.product.imagesUrl === undefined) {
+        this.product.imagesUrl = [];
+        this.product.imagesUrl.push('');
+      } else {
+        this.product.imagesUrl.push('');
+      }
+    },
+    removeImg() {
+      this.product.imagesUrl.pop();
+    },
+    openModal() {
+      this.bsModal.show();
+    },
+    hideModal() {
+      this.bsModal.hide();
+    }
+  },
+  mounted() {
+    this.bsModal = new Modal(this.$refs.modal);
+  }
+};
+</script>
