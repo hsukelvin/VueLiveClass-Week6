@@ -42,6 +42,9 @@
             <router-link class="nav-link" to="/admin/orders">訂單管理</router-link>
           </li>
           <li class="nav-item">
+            <router-link class="nav-link" to="/admin/coupons">優惠卷管理</router-link>
+          </li>
+          <li class="nav-item">
             <a href="#" class="nav-link" @click.prevent="$emit('sign-out')">登出</a>
           </li>
         </ul>

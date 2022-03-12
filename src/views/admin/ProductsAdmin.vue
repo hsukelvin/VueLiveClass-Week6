@@ -3,7 +3,7 @@
     <h2 class="mt-5">產品管理頁面</h2>
   </div>
 
-  <div class="container">
+  <div class="container mt-5">
     <div class="text-end mt-4">
       <button class="btn btn-primary" @click="openProductModal('新增產品')">建立新的產品</button>
     </div>

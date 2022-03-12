@@ -28,6 +28,9 @@
           />
         </div>
         <div class="text-end mt-4">
+          <button class="btn btn-lg btn-primary btn-block mx-3" type="button" @click="goFrontView">
+            回到前台
+          </button>
           <button class="btn btn-lg btn-primary btn-block" type="submit">登入</button>
         </div>
       </div>
@@ -58,6 +61,9 @@ export default {
         .catch(() => {
           this.$swal('帳號或密碼輸入錯誤');
         });
+    },
+    goFrontView() {
+      this.$router.push('/');
     }
   },
   mounted() {}
